@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package submission;
+
+service CodeSubmissionService {
+  //GRPC method which handles code submission
+  //should be implemented in server code
+  rpc Submit(CodeSubmission) returns (MarkResponse);
+}
+
+//default value should be inserted in server code
+message CodeSubmission {
+  optional string id = 1;
+  Language language = 2;
+  string code = 3;
+  repeated string compile_options = 4; //repeated can get empty string -> no need optional
+  string stdin = 5;
+  string expected_stdout = 6;
+  optional double time_limit = 7;
+  optional uint32 memory_limit = 8;
+  repeated Field fields = 9; //repeated can get empty string -> no need optional
+}
+
+enum Language {
+  C = 0;
+  CPP = 1;
+  JAVA = 2;
+  JAVASCRIPT = 3;
+  PYTHON = 4;
+}
+
+enum MarkResponseStatus { //cannot use remote type pattern with protobuf
+  CORRECT = 0;
+  WRONG = 1;
+  COMPILE_ERROR = 2;
+  RUNTIME_ERROR = 3;
+  TIME_LIMIT_EXCEEDED = 4;
+  MEMORY_LIMIT_EXCEEDED = 5;
+  INTERNAL_ERROR = 6;
+}
+
+message MarkResponseFields {
+  optional double time = 1;
+  optional uint32 memory = 2;
+  optional string stdout = 3;
+  optional string stderr = 4;
+}
+
+message MarkResponse {
+  MarkResponseStatus status = 1;
+  MarkResponseFields fields = 2;
+}
+
+enum Field {
+  WILD_CARD = 0;
+  TIME = 1;
+  MEMORY = 2;
+  STDOUT = 3;
+  STDERR = 4;
+}
